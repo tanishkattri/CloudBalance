@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Data
 @Entity
 public class User {
@@ -15,7 +18,11 @@ public class User {
 
     @NotNull
     @Column(nullable = false)
-    private String name;
+    private String firstName;
+
+    @NotNull
+    @Column(nullable = false)
+    private String lastName;
 
     @Email
     @NotNull
@@ -29,5 +36,8 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private ERole role;
+
+    @Column(nullable = true)
+    private LocalDateTime lastLogin;
 
 }

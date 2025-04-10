@@ -37,6 +37,7 @@ public class JWTService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15))
+//                .setExpiration(new Date(System.currentTimeMillis() + 10000) )
                 .signWith(secret(), io.jsonwebtoken.SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -44,6 +45,7 @@ public class JWTService {
     //added some chatgpt code in this fn
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+
         String role = userDetails.getAuthorities().stream()
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)

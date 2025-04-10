@@ -6,6 +6,8 @@ import com.example.CloudBalance.model.ERole;
 import com.example.CloudBalance.model.User;
 import com.example.CloudBalance.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +34,6 @@ public class UserServiceImpl implements UserService{
         System.out.println("Password"+user.getPassword());// Hash the password
         userRepository.save(user);
         userDTO.setId(user.getId());
-        userDTO.setPassword(user.getPassword());
         return userDTO;
     }
 
@@ -40,27 +41,41 @@ public class UserServiceImpl implements UserService{
     public UserDTO getUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-        return userMapper.userDTOMap(user);
+//        user.setPassword(null);
+        return userMapper.userDTOMapWithoutPassword(user);
     }
 
-    @Transactional
-    @Override
-    public String updateUser(Long id, UserDTO userDTO) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-        existingUser.setEmail(userDTO.getEmail());
-        existingUser.setName(userDTO.getName());
-        if (userDTO.getPassword() != null) {
-            existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        }
-        existingUser.setRole(ERole.valueOf(userDTO.getRole()));
-        User updatedUser = userRepository.save(existingUser);
-        return "User Updated";
-    }
+//    @Transactional
+//    @Override
+//    public String updateUser(Long id, UserDTO userDTO) {
+//        User existingUser = userRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+//        existingUser.setEmail(userDTO.getEmail());
+//        existingUser.setName(userDTO.getName());
+//        if (userDTO.getPassword() != null) {
+//            existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+//        }
+//        existingUser.setRole(ERole.valueOf(userDTO.getRole()));
+//        User updatedUser = userRepository.save(existingUser);
+//        return "User Updated";
+//    }
 
     @Override
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return users.stream().map(userMapper:: userDTOMap).collect(Collectors.toList());
+        return users.stream().map(userMapper:: userDTOMapWithoutPassword).collect(Collectors.toList());
+    }
+
+    public UserDTO getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        return userMapper.userDTOMapWithoutPassword(user);
+    }
+
+    public UserDTO getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User user = userRepository.findByEmail(email).orElseThrow();
+        return userMapper.userDTOMapWithoutPassword(user);
     }
 }

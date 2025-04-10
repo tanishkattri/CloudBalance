@@ -2,6 +2,7 @@ package com.example.CloudBalance.service;
 
 import com.example.CloudBalance.DTO.AuthResponse;
 import com.example.CloudBalance.DTO.LoginRequest;
+import com.example.CloudBalance.mapper.UserMapper;
 import com.example.CloudBalance.repository.UserRepository;
 import com.example.CloudBalance.security.jwt.JWTService;
 import com.example.CloudBalance.security.userDetail.UserDetailsImpl;
@@ -22,6 +23,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JWTService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final UserMapper UserMapper;
 
 //    public AuthResponse register(@Valid LoginRequest loginRequest) {
 //        var user = User.builder()
@@ -44,12 +46,11 @@ public class AuthService {
                 )
         );
         var user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
-
+//        UserDetailsImpl user = (UserDetailsImpl) authentication.getPrincipal();
         SecurityContextHolder.getContext().setAuthentication(authentication);
         var jwt = jwtService.generateToken((UserDetails) new UserDetailsImpl(user));
         return AuthResponse.builder()
                 .token(jwt)
                 .build();
-
     }
 }

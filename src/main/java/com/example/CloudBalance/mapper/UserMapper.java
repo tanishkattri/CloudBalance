@@ -12,8 +12,9 @@ public class UserMapper {
 
     public User userMap(UserDTO dto){
         User entity = new User();
-        entity.setId(dto.getId());
-        entity.setName(dto.getName());
+        entity.setFirstName(dto.getFirstName());
+        entity.setLastName(dto.getLastName());
+//        entity.setLastLogin(dto.getLastLogin());
         entity.setRole(ERole.valueOf(dto.getRole()));
         entity.setEmail(dto.getEmail());
         entity.setPassword(dto.getPassword());
@@ -25,8 +26,21 @@ public class UserMapper {
         dto.setId(entity.getId());
         dto.setEmail(entity.getEmail());
         dto.setRole(String.valueOf(entity.getRole()));
-        dto.setName(entity.getName());
+        dto.setFirstName(entity.getFirstName());
+        dto.setLastLogin(entity.getLastLogin());
+        dto.setLastLogin(entity.getLastLogin());
         dto.setPassword(entity.getPassword());
+        return dto;
+    }
+    public UserDTO userDTOMapWithoutPassword(User entity) {
+        UserDTO dto = new UserDTO();
+        dto.setId(entity.getId());
+        dto.setEmail(entity.getEmail());
+        dto.setFirstName(entity.getFirstName());
+        dto.setLastName(entity.getLastName());
+        dto.setRole(String.valueOf(entity.getRole()));
+        dto.setLastLogin(entity.getLastLogin());
+
         return dto;
     }
 }
