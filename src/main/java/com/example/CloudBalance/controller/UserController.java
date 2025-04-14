@@ -1,14 +1,11 @@
 package com.example.CloudBalance.controller;
 
 import com.example.CloudBalance.DTO.UserDTO;
-import com.example.CloudBalance.model.User;
-import com.example.CloudBalance.service.UserService;
+import com.example.CloudBalance.service.user.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,10 +45,10 @@ public class UserController {
         return ResponseEntity.ok(dto);
     }
     // UPDATE user by ID
-//    @PutMapping("/{id}")
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
-//    public ResponseEntity<String> updateUser(@PathVariable Long id, @Valid @RequestBody UserDTO userDTO) {
-//        String updatedUser = userService.updateUser(id, userDTO);
-//        return ResponseEntity.ok(updatedUser);
-//    }
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<String> updateUser(@PathVariable Long id, @Valid @RequestBody UserDTO userDTO) {
+        String updatedUser = userService.updateUser(id, userDTO);
+        return ResponseEntity.ok(updatedUser);
+    }
 }

@@ -1,23 +1,26 @@
-package com.example.CloudBalance.service;
+package com.example.CloudBalance.service.user;
 
 import com.example.CloudBalance.DTO.UserDTO;
 import com.example.CloudBalance.mapper.UserMapper;
+import com.example.CloudBalance.model.Account;
 import com.example.CloudBalance.model.ERole;
 import com.example.CloudBalance.model.User;
+import com.example.CloudBalance.repository.AccountRepository;
 import com.example.CloudBalance.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
@@ -26,6 +29,9 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
@@ -45,20 +51,48 @@ public class UserServiceImpl implements UserService{
         return userMapper.userDTOMapWithoutPassword(user);
     }
 
-//    @Transactional
 //    @Override
 //    public String updateUser(Long id, UserDTO userDTO) {
-//        User existingUser = userRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-//        existingUser.setEmail(userDTO.getEmail());
-//        existingUser.setName(userDTO.getName());
-//        if (userDTO.getPassword() != null) {
-//            existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-//        }
-//        existingUser.setRole(ERole.valueOf(userDTO.getRole()));
-//        User updatedUser = userRepository.save(existingUser);
-//        return "User Updated";
+//        return "";
 //    }
+
+    @Transactional
+    @Override
+    public String updateUser(Long id, UserDTO userDTO) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+
+        existingUser.setEmail(userDTO.getEmail());
+        existingUser.setFirstName(userDTO.getFirstName());
+        existingUser.setLastName(userDTO.getLastName());
+
+        ERole newRole = ERole.valueOf(userDTO.getRole());
+        existingUser.setRole(newRole);
+
+        // Password: encode only if present and not empty
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isBlank()) {
+            existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
+
+        // ✅ If role is CUSTOMER, update accounts
+        if (newRole == ERole.CUSTOMER) {
+            if (userDTO.getAccounts() != null && !userDTO.getAccounts().isEmpty()) {
+                List<Account> accountList = userDTO.getAccounts().stream()
+                        .map(idVal -> accountRepository.findById(idVal)
+                                .orElseThrow(() -> new RuntimeException("Account not found with id: " + idVal)))
+                        .collect(Collectors.toList());
+                existingUser.setAccount(accountList);
+            }
+        } else {
+            // ✅ If not CUSTOMER, remove all assigned accounts
+            existingUser.setAccount(new ArrayList<>());
+        }
+
+        userRepository.save(existingUser);
+        return "User Updated";
+    }
+
+
 
     @Override
     public List<UserDTO> getAllUsers() {

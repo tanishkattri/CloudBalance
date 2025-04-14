@@ -7,7 +7,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -39,5 +41,14 @@ public class User {
 
     @Column(nullable = true)
     private LocalDateTime lastLogin;
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_account",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "account_id")
+    )
+    private List<Account> account = new ArrayList<>();
 
 }
