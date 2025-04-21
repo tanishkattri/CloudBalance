@@ -17,7 +17,7 @@ public class AccountController {
     @Autowired
     private AccountServiceImpl accountService;
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_READ_ONLY', 'ROLE_CUSTOMER')")
     @GetMapping()
     public ResponseEntity<List<AccountDTO>> getAllAccounts() {
         List<AccountDTO> accountDTO = accountService.getAllAccounts();

@@ -1,6 +1,8 @@
 package com.example.CloudBalance.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 
 import java.util.ArrayList;

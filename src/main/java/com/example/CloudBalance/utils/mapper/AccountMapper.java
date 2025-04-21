@@ -1,4 +1,4 @@
-package com.example.CloudBalance.mapper;
+package com.example.CloudBalance.utils.mapper;
 
 import com.example.CloudBalance.DTO.AccountDTO;
 import com.example.CloudBalance.model.Account;

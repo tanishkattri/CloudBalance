@@ -1,7 +1,7 @@
 package com.example.CloudBalance.service.user;
 
 import com.example.CloudBalance.DTO.UserDTO;
-import com.example.CloudBalance.mapper.UserMapper;
+import com.example.CloudBalance.utils.mapper.UserMapper;
 import com.example.CloudBalance.model.Account;
 import com.example.CloudBalance.model.ERole;
 import com.example.CloudBalance.model.User;
@@ -47,14 +47,9 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-//        user.setPassword(null);
         return userMapper.userDTOMapWithoutPassword(user);
     }
 
-//    @Override
-//    public String updateUser(Long id, UserDTO userDTO) {
-//        return "";
-//    }
 
     @Transactional
     @Override
@@ -74,7 +69,7 @@ public class UserServiceImpl implements UserService {
             existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         }
 
-        // ✅ If role is CUSTOMER, update accounts
+        // If role is CUSTOMER, update accounts
         if (newRole == ERole.CUSTOMER) {
             if (userDTO.getAccounts() != null && !userDTO.getAccounts().isEmpty()) {
                 List<Account> accountList = userDTO.getAccounts().stream()
@@ -106,6 +101,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.userDTOMapWithoutPassword(user);
     }
 
+    @Override
     public UserDTO getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
