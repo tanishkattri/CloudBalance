@@ -64,28 +64,28 @@ public class UserServiceImpl implements UserService {
         ERole newRole = ERole.valueOf(userDTO.getRole());
         existingUser.setRole(newRole);
 
-        // Password: encode only if present and not empty
         if (userDTO.getPassword() != null && !userDTO.getPassword().isBlank()) {
             existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         }
 
-        // If role is CUSTOMER, update accounts
         if (newRole == ERole.CUSTOMER) {
-            if (userDTO.getAccounts() != null && !userDTO.getAccounts().isEmpty()) {
-                List<Account> accountList = userDTO.getAccounts().stream()
-                        .map(idVal -> accountRepository.findById(idVal)
-                                .orElseThrow(() -> new RuntimeException("Account not found with id: " + idVal)))
-                        .collect(Collectors.toList());
-                existingUser.setAccount(accountList);
-            }
+            List<Account> updatedAccounts = userDTO.getAccounts() != null
+                    ? userDTO.getAccounts().stream()
+                    .map(idVal -> accountRepository.findById(idVal)
+                            .orElseThrow(() -> new RuntimeException("Account not found with id: " + idVal)))
+                    .collect(Collectors.toList())
+                    : new ArrayList<>();
+
+            existingUser.getAccount().clear();
+            existingUser.getAccount().addAll(updatedAccounts);
         } else {
-            // ✅ If not CUSTOMER, remove all assigned accounts
-            existingUser.setAccount(new ArrayList<>());
+            existingUser.getAccount().clear();
         }
 
         userRepository.save(existingUser);
         return "User Updated";
     }
+
 
 
 

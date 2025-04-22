@@ -3,9 +3,12 @@ package com.example.CloudBalance.service.aws;
 import com.example.CloudBalance.DTO.aws.AsgResourceDTO;
 import com.example.CloudBalance.DTO.aws.Ec2ResourceDTO;
 import com.example.CloudBalance.DTO.aws.RdsResourceDTO;
+import com.example.CloudBalance.model.Account;
 import com.example.CloudBalance.model.awsBuilder.AsgClientBuilder;
 import com.example.CloudBalance.model.awsBuilder.Ec2ClientBuilder;
 import com.example.CloudBalance.model.awsBuilder.RdsClientBuilder;
+import com.example.CloudBalance.repository.AccountRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.autoscaling.model.AutoScalingGroup;
 import software.amazon.awssdk.services.ec2.model.Reservation;
@@ -19,9 +22,13 @@ import java.util.List;
 @Service
 public class AwsServiceImpl implements AwsService{
 
+    @Autowired
+    private AccountRepository accountRepository;
+
     @Override
-    public List<Ec2ResourceDTO> fetchEC2Instances(String roleArn) {
-        var ec2Client = Ec2ClientBuilder.buildEc2Client(roleArn);
+    public List<Ec2ResourceDTO> fetchEC2Instances(Long accountNumber) {
+        Account account = accountRepository.findByAccountNumber(accountNumber);
+        var ec2Client = Ec2ClientBuilder.buildEc2Client(account.getArnNumber());
         var response = ec2Client.describeInstances();
         List<Ec2ResourceDTO> result = new ArrayList<>();
         for (Reservation reservation : response.reservations()) {
@@ -42,13 +49,14 @@ public class AwsServiceImpl implements AwsService{
     }
 
     @Override
-    public List<RdsResourceDTO> fetchRDSInstances(String roleArn) {
-        var rdsClient = RdsClientBuilder.buildRdsClient(roleArn);
+    public List<RdsResourceDTO> fetchRDSInstances(Long accountNumber) {
+        Account account = accountRepository.findByAccountNumber(accountNumber);
+        var rdsClient = RdsClientBuilder.buildRdsClient(account.getArnNumber());
         var response = rdsClient.describeDBInstances();
         List<RdsResourceDTO> result = new ArrayList<>();
         for(DBInstance dbInstance : response.dbInstances()) {
             RdsResourceDTO dto = new RdsResourceDTO();
-            dto.setResourceId(dbInstance.dbInstanceIdentifier());
+            dto.setResourceId(dbInstance.dbInstanceArn());
             dto.setResourceName(dbInstance.dbInstanceIdentifier());
             dto.setRegion(dbInstance.availabilityZone());
             dto.setEngine(dbInstance.engine());
@@ -61,13 +69,14 @@ public class AwsServiceImpl implements AwsService{
 
 
     @Override
-    public List<AsgResourceDTO> fetchASGDetails(String roleArn) {
-        var asgClient = AsgClientBuilder.buildAsgClient(roleArn);
+    public List<AsgResourceDTO> fetchASGDetails(Long accountNumber) {
+        Account account = accountRepository.findByAccountNumber(accountNumber);
+        var asgClient = AsgClientBuilder.buildAsgClient(account.getArnNumber());
         var response = asgClient.describeAutoScalingGroups();
         List<AsgResourceDTO> result = new ArrayList<>();
         for(AutoScalingGroup asg : response.autoScalingGroups()) {
             AsgResourceDTO dto = new AsgResourceDTO();
-            dto.setResourceId(asg.autoScalingGroupName());
+            dto.setResourceId(asg.autoScalingGroupARN());
             dto.setResourceName(asg.autoScalingGroupName());
             dto.setRegion(asg.availabilityZones().get(0));
             dto.setDesiredCapacity(asg.desiredCapacity());

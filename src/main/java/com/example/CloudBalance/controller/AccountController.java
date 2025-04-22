@@ -2,8 +2,10 @@ package com.example.CloudBalance.controller;
 
 import com.example.CloudBalance.DTO.AccountDTO;
 import com.example.CloudBalance.service.account.AccountServiceImpl;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +31,6 @@ public class AccountController {
     @PostMapping()
     public ResponseEntity<AccountDTO> createAccount(@Valid @RequestBody AccountDTO accountDTO) {
         AccountDTO createdAccount = accountService.createAccount(accountDTO);
-        return ResponseEntity.ok(createdAccount);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdAccount);
     }
-
 }

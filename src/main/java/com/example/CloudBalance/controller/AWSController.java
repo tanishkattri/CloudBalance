@@ -24,23 +24,23 @@ public class AWSController {
 
     @GetMapping("/ec2")
     public ResponseEntity<List<Ec2ResourceDTO>> getEC2Instances(
-            @RequestParam String roleArn) {
-        var result = awsService.fetchEC2Instances(roleArn);
+            @RequestParam Long accountNumber) {
+        var result = awsService.fetchEC2Instances(accountNumber);
         log.info(result.toString());
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/rds")
     public ResponseEntity<List<RdsResourceDTO>> getRDSInstances(
-            @RequestParam String roleArn) {
-        var result = awsService.fetchRDSInstances(roleArn);
+            @RequestParam Long accountNumber) {
+        var result = awsService.fetchRDSInstances(accountNumber);
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/asg")
     public ResponseEntity<List<AsgResourceDTO>> getASGInstances(
-            @RequestParam String roleArn) {
-        var result = awsService.fetchASGDetails(roleArn);
+            @RequestParam Long accountNumber) {
+        var result = awsService.fetchASGDetails(accountNumber);
         return ResponseEntity.ok(result);
     }
 }
