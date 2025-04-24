@@ -6,9 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 public class SqlQueryGenerator {
 
-    public static String generateCostExplorerQuery(CostExplorerRequest request) {
+    public static String generateCostExplorerQuery(CostExplorerRequest request){
         StringBuilder query = new StringBuilder();
 
         // Validate group by field
@@ -17,13 +18,13 @@ public class SqlQueryGenerator {
             throw new IllegalArgumentException("GroupBy field cannot be null or empty");
         }
 
-        // SELECT clause with monthly grouping
-        query.append("SELECT TO_CHAR(USAGESTARTDATE, 'YYYY-MM') AS USAGE_MONTH, ")
+        // SELECT clause with daily grouping
+        query.append("SELECT TO_CHAR(USAGESTARTDATE, 'YYYY-MM-DD') AS USAGE_DATE, ")
                 .append(groupByField).append(", ")
                 .append("SUM(LINEITEM_UNBLENDEDCOST) AS TOTAL_USAGE_COST ")
                 .append("FROM COST_EXPLORER WHERE ");
 
-        // Monthly date filter
+        // Validate and apply date filter
         if (request.getStartDate() != null && request.getEndDate() != null) {
             query.append("USAGESTARTDATE BETWEEN TO_DATE('")
                     .append(request.getStartDate()).append("') AND TO_DATE('")
@@ -47,11 +48,12 @@ public class SqlQueryGenerator {
             }
         }
 
-        // GROUP BY and ORDER BY for monthly result
-        query.append("GROUP BY TO_CHAR(USAGESTARTDATE, 'YYYY-MM'), ")
+        // GROUP BY and ORDER BY clause
+        query.append("GROUP BY TO_CHAR(USAGESTARTDATE, 'YYYY-MM-DD'), ")
                 .append(groupByField).append(" ")
-                .append("ORDER BY USAGE_MONTH, TOTAL_USAGE_COST DESC");
+                .append("ORDER BY USAGE_DATE, TOTAL_USAGE_COST DESC");
 
         return query.toString();
+
     }
 }

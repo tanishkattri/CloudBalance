@@ -40,6 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_READ_ONLY', 'ROLE_CUSTOMER')")
     public ResponseEntity<UserDTO> getCurrentUser() {
         UserDTO dto = userService.getCurrentUser();
         return ResponseEntity.ok(dto);
