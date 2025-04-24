@@ -3,7 +3,7 @@ spring:
     name: CloudBalance
 
   datasource:
-    url: jdbc:mysql://localhost:3306/cloudBalance
+    jdbc-url: jdbc:mysql://localhost:3306/cloudBalance
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -13,3 +13,9 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+  snowflake:
+    url : jdbc:snowflake://YFYRZGG-BWB35436.snowflakecomputing.com/?warehouse=SYSTEM$STREAMLIT_NOTEBOOK_WH&db=aws&schema=cost
+    username: ro_user
+    password: fRe$her@b00tc@mp2025
+    driver-class-name: net.snowflake.client.jdbc.SnowflakeDriver

@@ -37,11 +37,13 @@ dependencies {
 	implementation 'jakarta.validation:jakarta.validation-api'
 	implementation 'org.hibernate.validator:hibernate-validator'
 	implementation platform("software.amazon.awssdk:bom:2.25.0")
-	// Core SDK
 	implementation "software.amazon.awssdk:sts"
 	implementation "software.amazon.awssdk:ec2"
 	implementation "software.amazon.awssdk:rds"
 	implementation "software.amazon.awssdk:autoscaling"
+
+	implementation("net.snowflake:snowflake-jdbc:3.23.1")
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'

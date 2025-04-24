@@ -1,14 +1,17 @@
 package com.example.CloudBalance.controller;
 
+import com.example.CloudBalance.DTO.ApiResponse;
 import com.example.CloudBalance.DTO.AuthResponse;
 import com.example.CloudBalance.DTO.LoginRequest;
 import com.example.CloudBalance.repository.BlackListTokenRepository;
 import com.example.CloudBalance.repository.UserRepository;
 import com.example.CloudBalance.security.jwt.JWTService;
 import com.example.CloudBalance.service.auth.AuthService;
+import com.example.CloudBalance.utils.ResponseBuilder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,44 +33,20 @@ public class AuthController {
 //    }
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.ok(authService.authenticateUser(loginRequest));
+    public ResponseEntity<ApiResponse<AuthResponse>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        AuthResponse authResponse = authService.authenticateUser(loginRequest);
+        return ResponseEntity.status(200).body(new ApiResponse<>(HttpStatus.OK.value(), "Login successful", authResponse));
     }
-
-//    @PostMapping("/logout")
-//    public ResponseEntity<?> logout(
-//            @RequestHeader("Authorization") String authorizationHeader
-//    ) {
-//        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-//            String token = authorizationHeader.substring(7);
-//            log.info(token);
-//            Date expiration = jwtService.getExpirationDateFromToken(token);
-//            BlackListToken blackListToken = new BlackListToken();
-//            blackListToken.setToken(token);
-//            blackListToken.setExpirationDate(expiration);
-//            blackListTokenRepository.save(blackListToken);
-//
-//            String email = jwtService.extractUsername(token); // `sub` claim
-//            Optional<User> userOpt = userRepository.findByEmail(email);
-//            userOpt.ifPresent(user -> {
-//                user.setLastLogin(LocalDateTime.now());
-//                userRepository.save(user);
-//            });
-//            SecurityContextHolder.clearContext();
-//            return ResponseEntity.ok("Logout successful");
-//        }else {
-//            return ResponseEntity.badRequest().body("Invalid token");
-//        }
-//    }
-
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<ApiResponse<Integer>> logout(@RequestHeader("Authorization") String authorizationHeader) {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
             authService.logoutUser(token);
-            return ResponseEntity.ok("Logout successful");
+            return ResponseEntity.status(200).body(
+                    new ApiResponse<>(HttpStatus.OK.value(), "Logout successful", null));
         } else {
-            return ResponseEntity.badRequest().body("Invalid token");
+            return ResponseEntity.badRequest().body(
+                    new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Invalid token", null));
         }
     }
 
