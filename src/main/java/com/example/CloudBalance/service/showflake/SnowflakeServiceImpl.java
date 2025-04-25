@@ -42,4 +42,9 @@ public class SnowflakeServiceImpl {
         String sql = SqlQueryGenerator.generateCostExplorerQuery(request);
         return snowflakeRepository.getCostExplorerData(sql);
     }
+
+
+    public List<String> getFilterOptions(String groupByField) {
+        return snowflakeRepository.fetchDistinctValues(groupByField);
+    }
 }

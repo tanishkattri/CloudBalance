@@ -25,4 +25,13 @@ public class SnowFlakeRepository {
     public List<Map<String, Object>> getCostExplorerData(String req) {
         return snowFlakeJdbcTemplate.queryForList(req);
     }
+
+    public List<String> fetchDistinctValues(String groupByField) {
+        String sql = String.format(
+                "SELECT DISTINCT %s FROM COST_EXPLORER WHERE %s IS NOT NULL ORDER BY %s",
+                groupByField, groupByField, groupByField
+        );
+
+        return snowFlakeJdbcTemplate.queryForList(sql, String.class);
+    }
 }

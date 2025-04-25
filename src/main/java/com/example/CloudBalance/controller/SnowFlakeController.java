@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/snowflake")
 public class SnowFlakeController {
@@ -25,5 +27,11 @@ public class SnowFlakeController {
         return ResponseEntity.ok(
                 new ApiResponse<>(200, "Success", snowflakeService.getTotalCosting(request))
         );
+    }
+
+    @GetMapping("/filters")
+    public ResponseEntity<ApiResponse<List<String>>> getFilterOptions(@RequestParam("groupBy") String groupByField) {
+        List<String> options = snowflakeService.getFilterOptions(groupByField);
+        return ResponseEntity.ok(new ApiResponse<>(200, "Success", options));
     }
 }
