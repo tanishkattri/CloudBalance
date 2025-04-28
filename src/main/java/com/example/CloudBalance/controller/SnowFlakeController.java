@@ -25,6 +25,13 @@ public class SnowFlakeController {
     @PostMapping("/cost")
     public ResponseEntity<ApiResponse<?>> getTotalCosting(@Valid @RequestBody UserCostExplorerRequest request) {
         return ResponseEntity.ok(
+                new ApiResponse<>(200, "Success", snowflakeService.getTop5AndOthersCosting(request))
+        );
+    }
+
+    @PostMapping("/complete-cost")
+    public ResponseEntity<ApiResponse<?>> getCompleteCosting(@Valid @RequestBody UserCostExplorerRequest request) {
+        return ResponseEntity.ok(
                 new ApiResponse<>(200, "Success", snowflakeService.getTotalCosting(request))
         );
     }

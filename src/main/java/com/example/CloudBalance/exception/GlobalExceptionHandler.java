@@ -72,4 +72,9 @@ public class GlobalExceptionHandler {
         log.error("Unhandled Exception", ex);
         return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "Something went wrong", request);
     }
+
+    @ExceptionHandler(AWSServiceException.class)
+    public ResponseEntity<ErrorResponse> handleAWSServiceException(AWSServiceException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.SERVICE_UNAVAILABLE, "AWS Service Error", ex.getMessage(), request);
+    }
 }

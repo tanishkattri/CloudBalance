@@ -11,4 +11,5 @@ public class UserCostExplorerRequest {
     private String endMonth;
     private String groupBy;
     private Map<String, List<String>> filters;
+    private String accountNumber;
 }
