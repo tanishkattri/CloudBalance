@@ -9,5 +9,8 @@ public interface UserService{
     public UserDTO getUser(Long id);
     public String updateUser(Long id, UserDTO userDTO);
     public List<UserDTO> getAllUsers();
+
+    UserDTO getUserByEmail(String email);
+
     public UserDTO getCurrentUser();
 }

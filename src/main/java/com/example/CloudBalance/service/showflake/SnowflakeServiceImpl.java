@@ -128,10 +128,6 @@ public class SnowflakeServiceImpl {
         return finalResult;
     }
 
-
-
-
-
     public List<String> getFilterOptions(String groupByField) {
         return snowflakeRepository.fetchDistinctValues(groupByField);
     }
